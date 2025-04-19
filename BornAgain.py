@@ -7,10 +7,11 @@ import os
 
 from Bot import Bot
 from clients.GameSpotClient import GameSpotClient
+from Modules.EmbedBuilder import *
 
 
 '''
-Implementation loosely based on Goose
+The everlasting legacy of Wiz, Sayori, Tanaka, and Goose.
 '''
 botInstance = Bot()
 client = botInstance.getClient()
@@ -32,10 +33,16 @@ async def rollDice(ctx, *params):
             await ctx.send(botInstance.rollDice(faces))
         except ValueError:
             raise ValueError("The number of faces on the dice must be an integer.")
-        
+
+
+# This command is used to trigger test scenarios. This will be inactive in prod.
 @client.command()
 async def test(ctx, *params):
-    print(botInstance.getGameSpotArticles())
+    # TODO abstract this away into a 5 min coroutine and save results in memory (measure performance first)
+    # otherwise, store in a DB. 
+    articles = botInstance.getGameSpotArticles()
+    artcileEmbed = buildGameSpotArticleEmbed(articles[0])
+    await ctx.send(embed=artcileEmbed['embed'], view=artcileEmbed['view'])
         
 if __name__ == "__main__":
     bot_booter()
