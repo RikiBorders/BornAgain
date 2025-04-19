@@ -1,2 +1,4 @@
 discord
 dotenv
+bs4
+lxml

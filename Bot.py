@@ -2,10 +2,13 @@ import discord
 from discord.ext import commands
 
 from BotUtils import BotUtils
+from adapters.GameSpotClientAdapter import GameSpotClientAdapter
+
 
 class Bot():
     def __init__(self):
         self.client = self.setUpClient()
+        self.gameSpotClientAdapter = GameSpotClientAdapter()
         print("Bot initialized")
 
     def setUpClient(self):
@@ -19,12 +22,11 @@ class Bot():
     def getClient(self):
         return self.client
     
-    def rollDice(self, params):
-        if params:
-            try:
-                faces = int(params[0])
-                return BotUtils.rollDice(self, faces)
-            except ValueError:
-                raise ValueError("The number of faces on the dice must be an integer.")
+    def rollDice(self, faces):
+        return BotUtils.rollDice(self, faces)
+    
+    def getGameSpotArticles(self):
+        return self.gameSpotClientAdapter.getArticles() 
+
     
     

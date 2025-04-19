@@ -6,6 +6,8 @@ import asyncio
 import os
 
 from Bot import Bot
+from clients.GameSpotClient import GameSpotClient
+
 
 '''
 Implementation loosely based on Goose
@@ -15,8 +17,8 @@ client = botInstance.getClient()
 
 def bot_booter():
     load_dotenv()
-    token = os.getenv("token")
-    client.run(token)
+    key = os.getenv("DISCORD_KEY")
+    client.run(key)
 
 @client.event
 async def on_ready():
@@ -24,9 +26,17 @@ async def on_ready():
 
 @client.command()
 async def rollDice(ctx, *params):
-    
-    await ctx.send(botInstance.rollDice(params))
-
+    if params:
+        try:
+            faces = int(params[0])
+            await ctx.send(botInstance.rollDice(faces))
+        except ValueError:
+            raise ValueError("The number of faces on the dice must be an integer.")
+        
+@client.command()
+async def test(ctx, *params):
+    print(botInstance.getGameSpotArticles())
+        
 if __name__ == "__main__":
     bot_booter()
     
