@@ -42,7 +42,7 @@ async def test(ctx, *params):
     # otherwise, store in a DB. 
     articles = botInstance.getGameSpotArticles()
     artcileEmbed = buildGameSpotArticleEmbed(articles[0])
-    await ctx.send(embed=artcileEmbed['embed'], view=artcileEmbed['view'])
+    await ctx.send(embed=artcileEmbed.embed, view=artcileEmbed.view)
         
 if __name__ == "__main__":
     bot_booter()
