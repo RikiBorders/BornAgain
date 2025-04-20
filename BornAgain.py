@@ -6,6 +6,7 @@ import asyncio
 import os
 
 from Bot import Bot
+from Modules.DiscordTaskModule import *
 from clients.GameSpotClient import GameSpotClient
 from Modules.EmbedBuilder import *
 
@@ -24,6 +25,7 @@ def bot_booter():
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user}')
+    createTasks(client, botInstance)
 
 @client.command()
 async def rollDice(ctx, *params):
@@ -43,6 +45,8 @@ async def test(ctx, *params):
     articles = botInstance.getGameSpotArticles()
     artcileEmbed = buildGameSpotArticleEmbed(articles[0])
     await ctx.send(embed=artcileEmbed.embed, view=artcileEmbed.view)
+
+
         
 if __name__ == "__main__":
     bot_booter()
