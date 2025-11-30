@@ -2,3 +2,4 @@ discord
 dotenv
 bs4
 lxml
+PyNaCl

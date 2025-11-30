@@ -4,11 +4,13 @@ from discord.ui import Button, View
 from dotenv import load_dotenv
 import asyncio
 import os
+import Utils.InputValidators  as InputValidators
 
 from Bot import Bot
 from Modules.DiscordTaskModule import *
-from clients.GameSpotClient import GameSpotClient
 from Modules.EmbedBuilder import *
+from Constants import DEFAULT_ROLE_NAME
+
 from Constants import DEFAULT_ROLE_NAME
 
 
@@ -36,7 +38,6 @@ async def on_member_join(member):
         await member.add_roles(role)
         print(f"Assigned default role {role.name} to new member {member.name}")
 
-
 @client.command()
 async def rollDice(ctx, *params):
     if params:
@@ -48,13 +49,10 @@ async def rollDice(ctx, *params):
 
 
 # This command is used to trigger test scenarios. This will be inactive in prod.
-@client.command()
-async def test(ctx, *params):
-    # TODO abstract this away into a 5 min coroutine and save results in memory (measure performance first)
-    # otherwise, store in a DB. 
-    articles = botInstance.getGameSpotArticles()
-    artcileEmbed = buildGameSpotArticleEmbed(articles[0])
-    await ctx.send(embed=artcileEmbed.embed, view=artcileEmbed.view)
+# @client.command()
+# async def test(ctx, *params):
+#     eventCreationEmbed = buildEventCreationEmbed()
+#     await ctx.send(embed=eventCreationEmbed.embed, view=eventCreationEmbed.view)
 
 
         

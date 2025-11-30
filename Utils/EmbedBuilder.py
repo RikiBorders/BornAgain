@@ -2,16 +2,6 @@ import discord
 from discord.ui import Button, View
 
 from Models.GameSpotArticleEmbed import GameSpotArticleEmbed
-from Models.EventCreationWizardEmbed import EventCreationWizardEmbed
-
-from Strings import EVENT_CREATOR_DESCRIPTION
-from Strings import EVENT_CREATOR_TITLE
-from Strings import EVENT_CREATION_IMAGE_URL
-from Strings import EVENT_CREATION_IMAGE_URL
-
-from Utils.BotUtils import build_arrakis_event_confirmation_description
-
-
 
 class EmbedBuilder:
     def __init__(self):
@@ -39,6 +29,10 @@ class EmbedBuilder:
 
     def build(self):
         pass
+
+
+
+
 
 class NextPageButton(Button):
     def __init__(self, label, style, custom_id, embeds):
@@ -133,36 +127,6 @@ class RadioStationSelectionButton(Button):
             await interaction.followup.send(f"It seems like audio is playing. Wait for any currently playing audio to stop playing first! Quack.")
 
 
-
-def build_radio_embed():
-    '''
-    Embed containing radio station selections.
-    '''
-    title = 'Radio Station Selection'
-    description = 'Select an available radio station to tune into!'
-    radio_embed = discord.Embed(
-        title=title,
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    return radio_embed
-
-def build_meme_embed(meme_data):
-    '''
-    Embed containing a meme fetched from reddit
-    '''
-    description = f'Subreddit: {meme_data["subreddit"]}\nAuthor: {meme_data["author"]}'
-
-    meme_embed = discord.Embed(
-        title=meme_data['title'],
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    meme_embed.set_image(url=meme_data['url'])
-
-    return meme_embed
-
-
 def build_help_embed():
     '''
     Help menu embed
@@ -193,7 +157,7 @@ def build_help_embed():
     ))
 
     help_embeds.append(discord.Embed(
-    title=f'Goose Help Menu Pg.2', 
+    title=f'Deep Dessert Help Manual', 
     description=description2,
     color=discord.Color(0x1253F3)
     ))
@@ -210,21 +174,6 @@ def build_song_confirmation_embed(song):
         color=discord.Color(0x1253F3)
     )
     return song_embed
-
-
-def build_trivia_embed(question_data):
-    description = '1. '+question_data['options'][0]
-
-    for index in range(1, len(question_data['options'])):
-        description +='\n'+f'{index+1}. '+question_data['options'][index]
-
-    trivia_embed = discord.Embed(
-        title=question_data['question'],
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-
-    return trivia_embed
 
 
 def build_queue_embeds(bot_instance):
@@ -260,82 +209,3 @@ def build_queue_embeds(bot_instance):
         queue_pages.append(queue_embed)
 
     bot_instance.set_queue_pages(queue_pages)
-
-
-def buildEventCreationEmbed() -> discord.Embed:
-    '''
-    Desc: Build an embed for the event creation menu.
-    '''
-    title = EVENT_CREATOR_TITLE
-    description = EVENT_CREATOR_DESCRIPTION
-    view = View()
-
-    event_creation_embed = discord.Embed(
-        title=title,
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    event_creation_embed.set_image(url=EVENT_CREATION_IMAGE_URL)
-    
-    return EventCreationWizardEmbed(embed=event_creation_embed, view=view)
-
-
-def buildArrakisDataEntryEmbed(title: str, description: str) -> discord.Embed:
-    view = View()
-    embed = discord.Embed(
-        title=title,
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-
-    return EventCreationWizardEmbed(embed=embed, view=view)
-
-def buildArrakisEventConfirmationEmbed(title: str, event_description: str, date: str) -> discord.Embed:
-    view = View()
-
-    description = build_arrakis_event_confirmation_description(title, event_description, date)
-
-    embed = discord.Embed(
-        title=title,
-        description=description,
-        color=discord.Color(0xFFFF00)
-    )
-
-    return EventCreationWizardEmbed(embed=embed, view=view)
-
-def buildEventPollEmbed(article: dict) -> discord.Embed:
-    view = View()
-
-    ArticleOverviewEmbed = discord.Embed(
-        title=article.title,
-        description=article.deck,
-        color=discord.Color(0xff9e00),
-    )
-    ArticleOverviewEmbed.set_author(name=article.authors)
-
-    # TODO: needs to be limited to <= 4096 characters in length or fewer.
-    # We should cut it off with a ..., and provide a link near the bottom.
-    ArticleBodyEmbed = discord.Embed(
-        title=f"{article.title}...",
-        description=article.body,
-        color=discord.Color(0xff9e00),
-    )
-    ArticleEmbeds=[ArticleOverviewEmbed, ArticleBodyEmbed]
-    
-    prev_page_button = PreviousPageButton(
-        label='Prev page', 
-        style=discord.ButtonStyle.blurple, 
-        custom_id='music_queue_prev_btn',
-        embeds=ArticleEmbeds
-    )
-    next_page_button = NextPageButton(
-        label='next page', 
-        style=discord.ButtonStyle.blurple, 
-        custom_id='music_queue_next_btn',
-        embeds=ArticleEmbeds
-    )
-    view.add_item(prev_page_button)
-    view.add_item(next_page_button)
-
-    return GameSpotArticleEmbed(embed=ArticleOverviewEmbed, view=view)
-

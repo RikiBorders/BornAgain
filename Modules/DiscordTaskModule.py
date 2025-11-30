@@ -1,23 +1,58 @@
-from clients.GameSpotClient import GameSpotClient
-from Modules.EmbedBuilder import buildGameSpotArticleEmbed
 import discord
 import asyncio
-from Constants import GAMESPOT_COROUTINE_WAIT_TIME_IN_SECONDS
+from Constants import INTRO_TIMER_CHECK_TICK_IN_SECONDS, AUTO_DISCONNECT_TICK_IN_SECONDS, USER_ID_TO_INTRO_FILE_MAP
+from BotUtils import BotUtils
 
 def createTasks(client, botInstance):
-    client.loop.create_task(checkForGameSpotArticles(client, botInstance))
+    client.loop.create_task(checkIntroTimer(client, botInstance))
+    client.loop.create_task(listen_for_voice_channel_join(client, botInstance))
+    client.loop.create_task(automatic_disconnect(client))
     
-async def checkForGameSpotArticles(client, botInstance):
-    await client.wait_until_ready()
-    channel = client.get_channel(954544663933628469)  # Replace with your channel ID. TODO: make this configurable.
-    gameSpotClientAdapter = botInstance.gameSpotClientAdapter
-    
-    while not client.is_closed():
-        articles = gameSpotClientAdapter.getArticles()
-        if articles:
-            for article in articles:
-                embed = buildGameSpotArticleEmbed(article)
-                await channel.send(embed=embed.embed, view=embed.view)
-                break  # Send only the first article. TODO: make this configurable.
+async def checkIntroTimer(client, botInstance):
+    while True:
+        if botInstance.introTimer['active'] and botInstance.introTimer['timer'] == 0:
+            botInstance.set_intro_timer(False, 0)
+
+        elif botInstance.introTimer['active'] and botInstance.introTimer['timer'] > 0:
+            botInstance.introTimer['timer'] -= INTRO_TIMER_CHECK_TICK_IN_SECONDS
             
-        await asyncio.sleep(GAMESPOT_COROUTINE_WAIT_TIME_IN_SECONDS)
+        await asyncio.sleep(INTRO_TIMER_CHECK_TICK_IN_SECONDS)
+
+
+async def listen_for_voice_channel_join(client, botInstance):
+    @client.event
+    async def on_voice_state_update(member, before, after):
+        # Only act if a user joins a voice channel
+        intro_timer_active = botInstance.is_intro_timer_active()
+        channel_state_valid = before.channel != after.channel and after.channel is not None
+        has_intro_audio = USER_ID_TO_INTRO_FILE_MAP.get(member.id, None) is not None
+        intro_audio_path = USER_ID_TO_INTRO_FILE_MAP.get(member.id, None)
+
+        # Intro timer check 
+        if has_intro_audio and channel_state_valid and not member.bot and not intro_timer_active:
+
+            current_voice_client = discord.utils.get(client.voice_clients, guild=member.guild)
+
+            # If bot is already in a different voice channel, leave it
+            if current_voice_client and current_voice_client.channel != after.channel:
+                await current_voice_client.disconnect()
+
+            # Join the new channel if not already there
+            if not current_voice_client or current_voice_client.channel != after.channel:
+                await after.channel.connect()
+                botInstance.set_intro_timer(True, 5)
+                source=discord.FFmpegPCMAudio(executable='ffmpeg', source=intro_audio_path)
+
+                new_voice_client = discord.utils.get(client.voice_clients, guild=member.guild)
+                new_voice_client.play(source)
+
+async def automatic_disconnect(client):
+    '''
+    After 10 minutes of inactivity, disconnect from whatever channel the bot is in
+    '''
+    while True:
+        voice_client = discord.utils.get(client.voice_clients)
+        if voice_client and voice_client.is_connected() and not voice_client.is_playing():
+            await voice_client.disconnect()
+
+        await asyncio.sleep(AUTO_DISCONNECT_TICK_IN_SECONDS)
