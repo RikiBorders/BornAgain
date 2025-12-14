@@ -1,7 +1,6 @@
 import discord
 from discord.ui import Button, View
 
-from Models.GameSpotArticleEmbed import GameSpotArticleEmbed
 from Models.EventCreationWizardEmbed import EventCreationWizardEmbed
 
 from Strings import EVENT_CREATOR_DESCRIPTION
@@ -302,40 +301,3 @@ def buildArrakisEventConfirmationEmbed(title: str, event_description: str, date:
     )
 
     return EventCreationWizardEmbed(embed=embed, view=view)
-
-def buildEventPollEmbed(article: dict) -> discord.Embed:
-    view = View()
-
-    ArticleOverviewEmbed = discord.Embed(
-        title=article.title,
-        description=article.deck,
-        color=discord.Color(0xff9e00),
-    )
-    ArticleOverviewEmbed.set_author(name=article.authors)
-
-    # TODO: needs to be limited to <= 4096 characters in length or fewer.
-    # We should cut it off with a ..., and provide a link near the bottom.
-    ArticleBodyEmbed = discord.Embed(
-        title=f"{article.title}...",
-        description=article.body,
-        color=discord.Color(0xff9e00),
-    )
-    ArticleEmbeds=[ArticleOverviewEmbed, ArticleBodyEmbed]
-    
-    prev_page_button = PreviousPageButton(
-        label='Prev page', 
-        style=discord.ButtonStyle.blurple, 
-        custom_id='music_queue_prev_btn',
-        embeds=ArticleEmbeds
-    )
-    next_page_button = NextPageButton(
-        label='next page', 
-        style=discord.ButtonStyle.blurple, 
-        custom_id='music_queue_next_btn',
-        embeds=ArticleEmbeds
-    )
-    view.add_item(prev_page_button)
-    view.add_item(next_page_button)
-
-    return GameSpotArticleEmbed(embed=ArticleOverviewEmbed, view=view)
-

@@ -1,8 +1,6 @@
 import discord
 from discord.ui import Button, View
 
-from Models.GameSpotArticleEmbed import GameSpotArticleEmbed
-
 class EmbedBuilder:
     def __init__(self):
         self.title = None

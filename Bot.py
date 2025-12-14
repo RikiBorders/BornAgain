@@ -24,12 +24,18 @@ class Bot():
     def getClient(self):
         return self.client
     
-    def rollDice(self, faces):
+    def roll_dice(self, faces):
         return BotUtils.rollDice(self, faces)
     
     def set_intro_timer(self, status: bool, time_in_seconds: int):
         self.introTimer['active'] = status
         self.introTimer['timer'] = time_in_seconds
+
+    async def set_role(self , role_name: str, member):
+        role = discord.utils.get(member.guild.roles, name=role_name)
+        if role:
+            await member.add_roles(role)
+            print(f"Assigned default role {role.name} to new member {member.name}")
 
     def is_intro_timer_active(self):
         return self.introTimer['active']

@@ -7,12 +7,9 @@ import os
 import Utils.InputValidators  as InputValidators
 
 from Bot import Bot
-from Modules.DiscordTaskModule import *
-from Modules.EmbedBuilder import *
+from Helpers.DiscordTaskHelper import *
+from Helpers.EmbedBuilder import *
 from Constants import DEFAULT_ROLE_NAME
-
-from Constants import DEFAULT_ROLE_NAME
-
 
 '''
 The everlasting legacy of Wiz, Sayori, Tanaka, and Goose.
@@ -25,27 +22,28 @@ def bot_booter():
     key = os.getenv("DISCORD_KEY")
     client.run(key)
 
+
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user}')
     createTasks(client, botInstance)
 
+
 @client.event
 async def on_member_join(member):
     # Set the default role for new members
-    role = discord.utils.get(member.guild.roles, name=DEFAULT_ROLE_NAME)
-    if role:
-        await member.add_roles(role)
-        print(f"Assigned default role {role.name} to new member {member.name}")
+    botInstance.set_role(DEFAULT_ROLE_NAME, member)
+
 
 @client.command()
-async def rollDice(ctx, *params):
+async def roll_dice(ctx, *params):
     if params:
         try:
             faces = int(params[0])
-            await ctx.send(botInstance.rollDice(faces))
         except ValueError:
             raise ValueError("The number of faces on the dice must be an integer.")
+        
+        await ctx.send(botInstance.rollDice(faces))
 
 
 # This command is used to trigger test scenarios. This will be inactive in prod.
