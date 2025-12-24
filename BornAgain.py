@@ -4,10 +4,10 @@ from discord.ui import Button, View
 from dotenv import load_dotenv
 import asyncio
 import os
-import Utils.InputValidators  as InputValidators
+import Utils.input_validation_utils  as input_validation_utils
 
 from Bot import Bot
-from Helpers.DiscordTaskHelper import *
+from Utils.discord_task_utils import *
 from Constants import DEFAULT_ROLE_NAME
 
 '''
@@ -45,12 +45,10 @@ async def roll_dice(ctx, *params):
         await ctx.send(botInstance.rollDice(faces))
 
 
-# This command is used to trigger test scenarios. This will be inactive in prod.
-# @client.command()
-# async def test(ctx, *params):
-#     eventCreationEmbed = buildEventCreationEmbed()
-#     await ctx.send(embed=eventCreationEmbed.embed, view=eventCreationEmbed.view)
-
+if os.getenv("STAGE") == "beta":
+    @client.command()
+    async def test(ctx, *params):
+        await ctx.send("Test command executed successfully.")
 
         
 if __name__ == "__main__":

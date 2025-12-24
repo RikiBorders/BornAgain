@@ -9,4 +9,4 @@ USER_ID_TO_INTRO_FILE_MAP = {
     257643785448718336: INTRO_FILE_PATH+'KOTH2_intro.wav',  # Conner
     251134467924688901: INTRO_FILE_PATH+'lizard_intro.wav',  # Matty
 }
-DEFAULT_ROLE_NAME = "Goon" # This must be exactly the name of the appropriate role
+DEFAULT_ROLE_NAME = "Goon" # This must be the exact name of the desired role, as it appears in discord.
