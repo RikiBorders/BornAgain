@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 
-from BotUtils import BotUtils
-
 class Bot():
     def __init__(self):
         self.client = self.setUpClient()
@@ -23,9 +21,6 @@ class Bot():
     
     def getClient(self):
         return self.client
-    
-    def roll_dice(self, faces):
-        return BotUtils.rollDice(self, faces)
     
     def set_intro_timer(self, status: bool, time_in_seconds: int):
         self.introTimer['active'] = status

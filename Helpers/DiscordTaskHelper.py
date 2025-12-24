@@ -2,7 +2,6 @@ import discord
 import asyncio
 from Constants import INTRO_TIMER_CHECK_TICK_IN_SECONDS, AUTO_DISCONNECT_TICK_IN_SECONDS, USER_ID_TO_INTRO_FILE_MAP
 from FeatureFlags.FeatureFlags import ENABLE_INTRO_SONGS
-from BotUtils import BotUtils
 
 def createTasks(client, botInstance):
     client.loop.create_task(checkIntroTimer(client, botInstance))

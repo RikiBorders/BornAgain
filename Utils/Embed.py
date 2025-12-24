@@ -1,7 +1,7 @@
 import discord
 from discord.ui import Button, View
 
-class EmbedBuilder:
+class Embed:
     def __init__(self):
         self.title = None
         self.description = None

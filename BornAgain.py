@@ -8,7 +8,6 @@ import Utils.InputValidators  as InputValidators
 
 from Bot import Bot
 from Helpers.DiscordTaskHelper import *
-from Helpers.EmbedBuilder import *
 from Constants import DEFAULT_ROLE_NAME
 
 '''

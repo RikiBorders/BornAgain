@@ -8,11 +8,10 @@ from Strings import EVENT_CREATOR_TITLE
 from Strings import EVENT_CREATION_IMAGE_URL
 from Strings import EVENT_CREATION_IMAGE_URL
 
-from Utils.BotUtils import build_arrakis_event_confirmation_description
 
 
 
-class EmbedBuilder:
+class Embed:
     def __init__(self):
         self.title = None
         self.description = None
@@ -76,7 +75,6 @@ class PreviousPageButton(Button):
 
         await interaction.response.edit_message(embed=self.embeds[self.current_page])
 
-
 class TriviaAnswerButton(Button):
     def __init__(self, label, style, custom_id, ctx, question, answer_value, correct_answer):
         super().__init__(label=label, style=style, custom_id=custom_id)
@@ -131,154 +129,6 @@ class RadioStationSelectionButton(Button):
         else:
             await interaction.followup.send(f"It seems like audio is playing. Wait for any currently playing audio to stop playing first! Quack.")
 
-
-
-def build_radio_embed():
-    '''
-    Embed containing radio station selections.
-    '''
-    title = 'Radio Station Selection'
-    description = 'Select an available radio station to tune into!'
-    radio_embed = discord.Embed(
-        title=title,
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    return radio_embed
-
-def build_meme_embed(meme_data):
-    '''
-    Embed containing a meme fetched from reddit
-    '''
-    description = f'Subreddit: {meme_data["subreddit"]}\nAuthor: {meme_data["author"]}'
-
-    meme_embed = discord.Embed(
-        title=meme_data['title'],
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    meme_embed.set_image(url=meme_data['url'])
-
-    return meme_embed
-
-
-def build_help_embed():
-    '''
-    Help menu embed
-    '''
-
-    description1 = '''All Goose commands are preceded with a period. 
-    Below is a list of all Goose commands:\n
-    **.play [song name]**: Play *[song name]*. You must be in a voice channel for this command to work.\n
-    **.queue**: Display all songs currently in the queue.\n
-    **.skip**: Skip the currently playing song.\n
-    **.clear**: Remove all songs currently in the queue.\n
-    **.remove [song name]**: Remove *[song name]* from the queue. *[song name]* must be typed exactly the same way as it appears in the queue\n
-    **.join**: Join the Caller's current voice channel.\n
-    **.leave**: If Goose is currently in a voice channel, it will leave.\n
-    '''
-    description2 = '''
-    **.quack**: Quack.\n
-    **.meme**: Send a random Reddit meme.\n
-    **.trivia**: Send a random trivia question\n
-    **.r34 [prompt]**: Send a random NSFW image related to the character name or theme entered in the *[prompt]* field.\n
-    '''
-
-    help_embeds = []
-    help_embeds.append(discord.Embed(
-        title=f'Goose Help Menu. Quack.', 
-        description=description1,
-        color=discord.Color(0x1253F3)
-    ))
-
-    help_embeds.append(discord.Embed(
-    title=f'Goose Help Menu Pg.2', 
-    description=description2,
-    color=discord.Color(0x1253F3)
-    ))
-
-    return help_embeds
-
-
-def build_song_confirmation_embed(song):
-    song_info = song.get_data_for_queue()
-    description = f'**This song was submitted by {song_info["submitter"]}. Quack**'
-    song_embed = discord.Embed(
-        title=f'"{song_info["name"]}" has been added to the queue\nDuration: {song_info["length"]}', 
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    return song_embed
-
-
-def build_trivia_embed(question_data):
-    description = '1. '+question_data['options'][0]
-
-    for index in range(1, len(question_data['options'])):
-        description +='\n'+f'{index+1}. '+question_data['options'][index]
-
-    trivia_embed = discord.Embed(
-        title=question_data['question'],
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-
-    return trivia_embed
-
-
-def build_queue_embeds(bot_instance):
-    '''
-    Desc: Build embeds for the music queue, and store them on the bot instance.
-    '''
-    current_song_data = bot_instance.currently_playing_song()
-    embed_image = ''
-    if current_song_data:
-        embed_image = current_song_data.get_thumbnail()
-        current_song_data = current_song_data.get_data_for_queue()
-        description = f"**Currently playing song: {current_song_data['name']}**\nSubmitted by: {current_song_data['submitter']}\nDuration: {current_song_data['length']}"
-    else:
-        description = 'Could not fetch current song'
-    
-    music_queue = bot_instance.get_queue()
-    queue_pages = []
-
-    for i in range(len(music_queue)):
-        queue_embed = discord.Embed(
-            title=f'Current Queue [{i+1}/{len(music_queue)}]', 
-            description=description,
-            color=discord.Color(0x1253F3)
-            )
-        if embed_image:
-            queue_embed.set_thumbnail(url=embed_image)
-
-        for song in music_queue[i]:
-            song_data = song.get_data_for_queue()
-            value_info = f"Submitted by: {song_data['submitter']}\n Duration: {song_data['length']}. Position in queue: {song_data['queue_position']}"
-            queue_embed.add_field(name=song_data['name'], value=value_info, inline=False)
-        
-        queue_pages.append(queue_embed)
-
-    bot_instance.set_queue_pages(queue_pages)
-
-
-def buildEventCreationEmbed() -> discord.Embed:
-    '''
-    Desc: Build an embed for the event creation menu.
-    '''
-    title = EVENT_CREATOR_TITLE
-    description = EVENT_CREATOR_DESCRIPTION
-    view = View()
-
-    event_creation_embed = discord.Embed(
-        title=title,
-        description=description,
-        color=discord.Color(0x1253F3)
-    )
-    event_creation_embed.set_image(url=EVENT_CREATION_IMAGE_URL)
-    
-    return EventCreationWizardEmbed(embed=event_creation_embed, view=view)
-
-
 def buildArrakisDataEntryEmbed(title: str, description: str) -> discord.Embed:
     view = View()
     embed = discord.Embed(
@@ -292,7 +142,7 @@ def buildArrakisDataEntryEmbed(title: str, description: str) -> discord.Embed:
 def buildArrakisEventConfirmationEmbed(title: str, event_description: str, date: str) -> discord.Embed:
     view = View()
 
-    description = build_arrakis_event_confirmation_description(title, event_description, date)
+    description = "lorem ipsum dolorem ipsum lorem ipsum lorem ipsum"
 
     embed = discord.Embed(
         title=title,
