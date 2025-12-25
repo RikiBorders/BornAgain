@@ -1,12 +1,13 @@
-import discord
+from discord import app_commands
+from discord.ext import commands
 from discord.ext import commands
 from discord.ui import Button, View
 from dotenv import load_dotenv
 import asyncio
 import os
-import Utils.input_validation_utils  as input_validation_utils
 
 from Bot import Bot
+from Utils.embed_utils import *
 from Utils.discord_task_utils import *
 from Constants import DEFAULT_ROLE_NAME
 
@@ -34,21 +35,26 @@ async def on_member_join(member):
     botInstance.set_role(DEFAULT_ROLE_NAME, member)
 
 
+@client.tree.command(
+        name="help", 
+        description="Displays the BornAgain help menu",
+        guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
+)
+async def help(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        ephemeral=True,
+        embed=build_help_embed().to_discord_embed()
+    )
+
+
+# Test commands available only in the beta environment
 @client.command()
-async def roll_dice(ctx, *params):
-    if params:
-        try:
-            faces = int(params[0])
-        except ValueError:
-            raise ValueError("The number of faces on the dice must be an integer.")
-        
-        await ctx.send(botInstance.rollDice(faces))
 
-
-if os.getenv("STAGE") == "beta":
-    @client.command()
-    async def test(ctx, *params):
-        await ctx.send("Test command executed successfully.")
+# This command needs to be run to register the slash commands with Discord
+async def sync_commands(ctx, *params):
+    if os.getenv("STAGE") == "beta":
+        await client.tree.sync(guild=ctx.guild)
+        await ctx.send("Commands synced")
 
         
 if __name__ == "__main__":

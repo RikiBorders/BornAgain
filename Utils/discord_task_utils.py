@@ -4,11 +4,11 @@ from Constants import INTRO_TIMER_CHECK_TICK_IN_SECONDS, AUTO_DISCONNECT_TICK_IN
 from FeatureFlags.feature_flags import ENABLE_INTRO_SONGS
 
 def createTasks(client, botInstance):
-    client.loop.create_task(checkIntroTimer(client, botInstance))
+    client.loop.create_task(check_intro_timer(client, botInstance))
     client.loop.create_task(listen_for_voice_channel_join(client, botInstance))
     client.loop.create_task(automatic_disconnect(client))
     
-async def checkIntroTimer(client, botInstance):
+async def check_intro_timer(client, botInstance):
     while True:
         if botInstance.introTimer['active'] and botInstance.introTimer['timer'] == 0:
             botInstance.set_intro_timer(False, 0)
