@@ -1,17 +1,24 @@
 import discord
 from discord.ext import commands
+from helpers.channel_registry_helper import ChannelRegistryHelper
 
 class Bot():
     def __init__(self):
-        self.client = self.setUpClient()
+        self.client = self.create_client()
+        self.channel_registry_helper = ChannelRegistryHelper()
         self.introTimer = {
             'active': False, 
             'current_time': 0
         }
+        self.register_channels()
         
         print("Bot initialized", flush=True)
 
-    def setUpClient(self):
+    def register_channels(self):
+        self.channel_registry_helper.register_channel("command", None) 
+        self.channel_registry_helper.register_channel("welcome", None)
+
+    def create_client(self):
         intents = discord.Intents.all()
         intents.voice_states = True
         client = commands.Bot(command_prefix='.', intents=intents)
