@@ -7,9 +7,9 @@ import asyncio
 import os
 
 from Bot import Bot
-from Utils.embed_utils import *
-from Utils.discord_task_utils import *
-from Constants import DEFAULT_ROLE_NAME
+from util.embed_utils import *
+from util.discord_task_utils import *
+from constant.Constants import DEFAULT_ROLE_NAME
 
 '''
 The everlasting legacy of Wiz, Sayori, Tanaka, and Goose.

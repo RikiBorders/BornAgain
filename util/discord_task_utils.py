@@ -1,6 +1,6 @@
 import discord
 import asyncio
-from Constants import INTRO_TIMER_CHECK_TICK_IN_SECONDS, AUTO_DISCONNECT_TICK_IN_SECONDS, USER_ID_TO_INTRO_FILE_MAP
+from constant.Constants import INTRO_TIMER_CHECK_TICK_IN_SECONDS, AUTO_DISCONNECT_TICK_IN_SECONDS, USER_ID_TO_INTRO_FILE_MAP
 from featureFlags.feature_flags import ENABLE_INTRO_SONGS
 
 def createTasks(client, botInstance):
