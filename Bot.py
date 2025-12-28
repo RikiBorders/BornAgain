@@ -1,22 +1,26 @@
 import discord
 from discord.ext import commands
 from helpers.channel_registry_helper import ChannelRegistryHelper
+from client.supabase_client import SupabaseClient
 
 class Bot():
     def __init__(self):
         self.client = self.create_client()
         self.channel_registry_helper = ChannelRegistryHelper()
+        self.guild_id = self.set_guild_id()
         self.introTimer = {
             'active': False, 
             'current_time': 0
         }
-        self.register_channels()
-        
+        self.supabase_client = SupabaseClient().get_client()
+
+        # TODO: re-enable this call, and update it to retrieve and parse the channels json column.
+        # self.register_channels()
         print("Bot initialized", flush=True)
 
     def register_channels(self):
-        self.channel_registry_helper.register_channel("command", None) 
-        self.channel_registry_helper.register_channel("welcome", None)
+        self.channel_registry_helper.register_channel("command", self.get_channel_id_from_supabase("command_channel_id")) 
+        self.channel_registry_helper.register_channel("welcome", self.get_channel_id_from_supabase("welcome_channel_id"))
 
     def create_client(self):
         intents = discord.Intents.all()
@@ -26,8 +30,48 @@ class Bot():
 
         return client
     
-    def getClient(self):
+    def get_client(self):
         return self.client
+    
+    def get_channel_id_from_supabase(self, channel_type: str) -> int:
+        import json
+
+        response = (
+            self.supabase_client
+            .table("server_configurations")
+            .select("channels")
+            .eq("guild_id", self.guild_id)
+            .execute()
+        )
+
+        # The PostgREST client returns an object with a `data` attribute.
+        # `data` is usually a list of rows or a single dict depending on the query.
+        data = getattr(response, "data", None)
+
+        if not data:
+            return None
+
+        # Normalize to a single row dict
+        row = data[0] if isinstance(data, list) else data
+
+        # The `channels` column may already be a dict or a JSON string.
+        channels = row.get("channels") if isinstance(row, dict) else None
+
+        if isinstance(channels, str):
+            try:
+                channels = json.loads(channels)
+            except json.JSONDecodeError:
+                channels = None
+
+        if not channels or not isinstance(channels, dict):
+            return None
+
+        channel_id = channels.get(channel_type)
+        return int(channel_id) if channel_id is not None else None
+    
+    def set_guild_id(self) -> int:
+        # For now, return a hardcoded guild ID. In the future, this could be dynamic.
+        return 367021007690792961
     
     def set_intro_timer(self, status: bool, time_in_seconds: int):
         self.introTimer['active'] = status

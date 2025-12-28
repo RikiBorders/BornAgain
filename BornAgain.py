@@ -15,7 +15,7 @@ from Constants import DEFAULT_ROLE_NAME
 The everlasting legacy of Wiz, Sayori, Tanaka, and Goose.
 '''
 botInstance = Bot()
-client = botInstance.getClient()
+client = botInstance.get_client()
 
 def bot_booter():
     load_dotenv()
@@ -46,11 +46,10 @@ async def help(interaction: discord.Interaction):
         embed=build_help_embed().to_discord_embed()
     )
 
-
 # Test commands available only in the beta environment
-@client.command()
 
 # This command needs to be run to register the slash commands with Discord
+@client.command()
 async def sync_commands(ctx, *params):
     if os.getenv("STAGE") == "beta":
         await client.tree.sync(guild=ctx.guild)

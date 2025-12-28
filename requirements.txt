@@ -3,3 +3,4 @@ dotenv
 bs4
 lxml
 PyNaCl
+supabase
