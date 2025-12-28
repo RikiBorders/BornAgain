@@ -15,3 +15,14 @@ class SupabaseClient:
 
     def get_client(self) -> Client:
         return self.client
+    
+    def get_channels(self, guild_id: int) -> dict:
+        response = (
+            self.client
+            .table("server_configurations")
+            .select("channels")
+            .eq("guild_id", guild_id)
+            .execute()
+        )
+
+        return response

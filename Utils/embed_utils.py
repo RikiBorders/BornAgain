@@ -1,5 +1,5 @@
 from model.embed import Embed
-from strings.help_menu_strings import HELP_MENU_DESCRIPTION
+from stringg.help_menu_strings import HELP_MENU_DESCRIPTION
 
 def build_help_embed():
 
