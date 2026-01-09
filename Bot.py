@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import json
 
+from exception.recdord_not_found_exception import RecordNotFoundError
 from helper.channel_registry_helper import ChannelRegistryHelper
 from client.supabase_client import SupabaseClient
 
@@ -14,15 +15,16 @@ class Bot():
             'active': False, 
             'current_time': 0
         }
-        self.supabase_client = SupabaseClient().get_client()
+        self.supabase_client = SupabaseClient()
+        self.server_data = self.get_server_data_from_supabase()
 
-        # TODO: re-enable this call, and update it to retrieve and parse the channels json column.
         self.register_channels()
         print("Bot initialized", flush=True)
 
     def register_channels(self):
-        self.channel_registry_helper.register_channel("command", self.get_channel_id_from_supabase("command_channel_id")) 
-        self.channel_registry_helper.register_channel("welcome", self.get_channel_id_from_supabase("welcome_channel_id"))
+        
+        self.channel_registry_helper.register_channel("command", self.server_data['channels']['command_channel_id']) 
+        self.channel_registry_helper.register_channel("welcome", self.server_data['channels']['welcome_channel_id'])
 
     def create_client(self):
         intents = discord.Intents.all()
@@ -34,7 +36,19 @@ class Bot():
     
     def get_client(self):
         return self.client
-    
+
+    def get_channel_by_channel_type(self, channel_type: str) -> discord.TextChannel | discord.VoiceChannel:
+        '''
+        retrieve a discord channel object by its registered channel type. Can return
+        TextChannel or VoiceChannel.
+        '''
+        channel_id: int = self.channel_registry_helper.get_channel(channel_type)
+
+        if channel_id:
+            return self.client.get_channel(channel_id)
+        else:
+            raise ValueError(f"Channel type not found, or unset: {channel_type}")
+
     def get_channel_id_from_supabase(self, channel_type: str) -> int:
         response = self.supabase_client.get_channels(self.guild_id)
 
@@ -61,6 +75,26 @@ class Bot():
         channel_id = channels.get(channel_type)
         return int(channel_id) if channel_id is not None else None
     
+    def get_server_data_from_supabase(self) -> dict:
+        response = self.supabase_client.get_server_data(self.guild_id)
+
+        data = getattr(response, "data", None)
+        if not data:
+            raise RecordNotFoundError(f"Server data not found for guild_id {self.guild_id}")
+
+        columns = data[0] if isinstance(data, list) else data
+        return columns if isinstance(columns, dict) else {}
+    
+    def get_default_role(self) -> Optional[int]:
+        return self.server_data['default_role']
+    
+    def has_default_role(self) -> bool:
+        default_role = self.server_data['default_role']
+        return True if default_role else False
+
+    def is_intro_timer_active(self):
+        return self.introTimer['active']
+
     def set_guild_id(self) -> int:
         # For now, return a hardcoded guild ID. In the future, this could be dynamic.
         return 367021007690792961
@@ -75,8 +109,6 @@ class Bot():
             await member.add_roles(role)
             print(f"Assigned default role {role.name} to new member {member.name}")
 
-    def is_intro_timer_active(self):
-        return self.introTimer['active']
 
     
     

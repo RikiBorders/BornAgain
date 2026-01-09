@@ -32,7 +32,9 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     # Set the default role for new members
-    botInstance.set_role(DEFAULT_ROLE_NAME, member)
+    if botInstance.has_default_role():
+        default_role_name = botInstance.get_default_role()
+        await botInstance.set_role(default_role_name, member)
 
 
 @client.tree.command(
