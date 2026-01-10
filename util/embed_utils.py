@@ -1,13 +1,13 @@
 from model.embed import Embed
 from stringg.help_menu_strings import HELP_MENU_DESCRIPTION
 from stringg.embed_strings import WELCOME_EMBED_DESCRIPTIONS
-from constant.Constants import WELCOME_EMBED_IMAGE_URLS
+from constant.Constants import BOT_NAME, WELCOME_EMBED_IMAGE_URLS
 from random import choice
 
 def build_help_embed():
 
     embed = Embed(
-        title="BornAgain Help Menu",
+        title=f"{BOT_NAME} Help Menu",
         description=HELP_MENU_DESCRIPTION,
         color=0x3498db  # Example color
     )

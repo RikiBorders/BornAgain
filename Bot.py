@@ -7,6 +7,8 @@ from helper.channel_registry_helper import ChannelRegistryHelper
 from client.supabase_client import SupabaseClient
 from typing import Optional
 
+from util.embed_utils import build_welcome_embed
+
 class Bot():
     def __init__(self):
         self.client = self.create_client()
@@ -108,6 +110,17 @@ class Bot():
         if role:
             await member.add_roles(role)
             print(f"Assigned default role {role.name} to new member {member.name}")
+
+    async def send_on_member_join_messages(self, member):
+        system_channel_id = member.guild.system_channel.id
+        member_count = len([m for m in member.guild.members if not m.bot])
+        channel = await self.client.fetch_channel(system_channel_id)
+
+        await channel.send(f"{member.mention}")
+        await channel.send(
+            embed=build_welcome_embed(member_count).to_discord_embed()
+        )
+
 
 
     

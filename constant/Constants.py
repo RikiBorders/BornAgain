@@ -10,6 +10,7 @@ USER_ID_TO_INTRO_FILE_MAP = {
     251134467924688901: INTRO_FILE_PATH+'lizard_intro.wav',  # Matty
 }
 DEFAULT_ROLE_NAME = "Goon" # This must be the exact name of the desired role, as it appears in discord.
+BOT_NAME = "Evil Knight"
 
 WELCOME_EMBED_IMAGE_URLS = ["https://bkpmkjrgjumxattkpejz.supabase.co/storage/v1/object/public/images/megumi.gif", 
                             "https://bkpmkjrgjumxattkpejz.supabase.co/storage/v1/object/public/images/sukuna%20(2).gif",

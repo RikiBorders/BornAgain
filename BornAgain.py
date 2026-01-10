@@ -36,17 +36,11 @@ async def on_member_join(member):
         default_role_name = botInstance.get_default_role()
         await botInstance.set_role(default_role_name, member)
 
-    system_channel_id = member.guild.system_channel.id
-    member_count = len([m for m in member.guild.members if not m.bot])
-    channel = await client.fetch_channel(system_channel_id)
-
-    await channel.send(
-        embed=build_welcome_embed(member_count).to_discord_embed()
-    )
+    await botInstance.send_on_member_join_messages(member)
 
 @client.tree.command(
         name="help", 
-        description="Displays the BornAgain help menu",
+        description="Displays the bot help menu",
         guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
 )
 async def help(interaction: discord.Interaction):
