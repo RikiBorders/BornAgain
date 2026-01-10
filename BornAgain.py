@@ -36,6 +36,13 @@ async def on_member_join(member):
         default_role_name = botInstance.get_default_role()
         await botInstance.set_role(default_role_name, member)
 
+    system_channel_id = member.guild.system_channel.id
+    member_count = len([m for m in member.guild.members if not m.bot])
+    channel = await client.fetch_channel(system_channel_id)
+
+    await channel.send(
+        embed=build_welcome_embed(member_count).to_discord_embed()
+    )
 
 @client.tree.command(
         name="help", 

@@ -5,6 +5,7 @@ import json
 from exception.recdord_not_found_exception import RecordNotFoundError
 from helper.channel_registry_helper import ChannelRegistryHelper
 from client.supabase_client import SupabaseClient
+from typing import Optional
 
 class Bot():
     def __init__(self):
@@ -22,7 +23,6 @@ class Bot():
         print("Bot initialized", flush=True)
 
     def register_channels(self):
-        
         self.channel_registry_helper.register_channel("command", self.server_data['channels']['command_channel_id']) 
         self.channel_registry_helper.register_channel("welcome", self.server_data['channels']['welcome_channel_id'])
 

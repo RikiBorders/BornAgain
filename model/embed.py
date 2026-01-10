@@ -2,11 +2,18 @@ import discord
 from discord.ui import Button, View
 
 class Embed:
-    def __init__(self, title: str=None, description: str=None, color: str=None, pages: [Embed]=[]):
+    def __init__(self, 
+                 title: str=None, 
+                 description: str=None, 
+                 color: str=None, 
+                 pages: list["Embed"]=[], 
+                 image_url: str=None, 
+                 footer: str=None):
         self.title = title
         self.color = color
         self.description = description
-        
+        self.image_url = image_url
+        self.footer = footer
         self.fields = []
 
         # Pagination state management
@@ -41,4 +48,9 @@ class Embed:
                 value=field["value"],
                 inline=field["inline"]
             )
+        if self.image_url:
+            discord_embed.set_image(url=self.image_url)
+        if self.footer:
+            discord_embed.set_footer(text=self.footer)
+
         return discord_embed
