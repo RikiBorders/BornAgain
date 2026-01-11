@@ -90,6 +90,9 @@ class Bot():
     def get_default_role(self) -> Optional[int]:
         return self.server_data['default_role']
     
+    def get_image_urls_for_welcome_embed(self) -> list[str]:
+        return self.server_data['welcome_image_urls']['urls']
+    
     def has_default_role(self) -> bool:
         default_role = self.server_data['default_role']
         return True if default_role else False
@@ -113,12 +116,12 @@ class Bot():
 
     async def send_on_member_join_messages(self, member):
         system_channel_id = member.guild.system_channel.id
-        member_count = len([m for m in member.guild.members if not m.bot])
+        member_count = len([m for m in member.guild.members])
         channel = await self.client.fetch_channel(system_channel_id)
 
         await channel.send(f"{member.mention}")
         await channel.send(
-            embed=build_welcome_embed(member_count).to_discord_embed()
+            embed=build_welcome_embed(member_count, self.get_image_urls_for_welcome_embed()).to_discord_embed()
         )
 
 

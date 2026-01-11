@@ -11,8 +11,3 @@ USER_ID_TO_INTRO_FILE_MAP = {
 }
 DEFAULT_ROLE_NAME = "Goon" # This must be the exact name of the desired role, as it appears in discord.
 BOT_NAME = "Evil Knight"
-
-WELCOME_EMBED_IMAGE_URLS = ["https://bkpmkjrgjumxattkpejz.supabase.co/storage/v1/object/public/images/megumi.gif", 
-                            "https://bkpmkjrgjumxattkpejz.supabase.co/storage/v1/object/public/images/sukuna%20(2).gif",
-                            "https://bkpmkjrgjumxattkpejz.supabase.co/storage/v1/object/public/images/ezgif-76dc464cbf746f48.gif"
-                            ] # TODO: pull this from the database 
