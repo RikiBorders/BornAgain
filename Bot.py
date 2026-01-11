@@ -7,7 +7,7 @@ from helper.channel_registry_helper import ChannelRegistryHelper
 from client.supabase_client import SupabaseClient
 from typing import Optional
 
-from util.embed_utils import build_welcome_embed
+from util.embed_utils import build_welcome_embed, build_announcement_embed
 
 class Bot():
     def __init__(self):
@@ -19,7 +19,9 @@ class Bot():
             'current_time': 0
         }
         self.supabase_client = SupabaseClient()
+        #TODO: server data should be fetched in a constructor, and values assigned and cached as needed as attributes
         self.server_data = self.get_server_data_from_supabase()
+        print(self.server_data)
 
         self.register_channels()
         print("Bot initialized", flush=True)
@@ -27,6 +29,7 @@ class Bot():
     def register_channels(self):
         self.channel_registry_helper.register_channel("command", self.server_data['channels']['command_channel_id']) 
         self.channel_registry_helper.register_channel("welcome", self.server_data['channels']['welcome_channel_id'])
+        self.channel_registry_helper.register_channel("announcement", self.server_data['channels']['announcement_channel_id'])
 
     def create_client(self):
         intents = discord.Intents.all()
@@ -44,7 +47,7 @@ class Bot():
         retrieve a discord channel object by its registered channel type. Can return
         TextChannel or VoiceChannel.
         '''
-        channel_id: int = self.channel_registry_helper.get_channel(channel_type)
+        channel_id: int = self.channel_registry_helper.get_channel_id(channel_type)
 
         if channel_id:
             return self.client.get_channel(channel_id)
@@ -91,8 +94,11 @@ class Bot():
         return self.server_data['default_role']
     
     def get_image_urls_for_welcome_embed(self) -> list[str]:
-        return self.server_data['welcome_image_urls']['urls']
+        return self.server_data['image_urls']['welcome_image_urls']
     
+    def get_image_urls_for_announcement_embed(self) -> list[str]:
+        return self.server_data['image_urls']['announcement_image_urls']
+
     def has_default_role(self) -> bool:
         default_role = self.server_data['default_role']
         return True if default_role else False
@@ -124,7 +130,15 @@ class Bot():
             embed=build_welcome_embed(member_count, self.get_image_urls_for_welcome_embed()).to_discord_embed()
         )
 
+    async def send_announcement_message(self, interaction: discord.Interaction, title: str, description: str):
+        image_urls = self.get_image_urls_for_announcement_embed()
+        announcement_channel_id = self.channel_registry_helper.get_channel_id("announcement")
+        channel = await self.client.fetch_channel(announcement_channel_id)
 
+        await channel.send("@everyone")
+        await channel.send(
+            embed=build_announcement_embed(title, description, image_urls).to_discord_embed()
+        )
 
     
     

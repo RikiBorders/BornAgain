@@ -9,7 +9,7 @@ def build_help_embed():
     embed = Embed(
         title=f"{BOT_NAME} Help Menu",
         description=HELP_MENU_DESCRIPTION,
-        color=0x3498db  # Example color
+        color=0xff0000
     )
     return embed
 
@@ -20,6 +20,16 @@ def build_welcome_embed(member_count: int, image_urls: list[str]):
         description=choice(WELCOME_EMBED_DESCRIPTIONS),
         image_url=choice(image_urls),
         footer = f"You are the {member_count}th member!", # update this to use 2nd, th, st, etc
-        color=0x2ecc71,  # Example color
+        color=0xff0000,
+    )
+    return embed
+
+def build_announcement_embed(title: str, description: str, image_urls: list[str]):
+
+    embed = Embed(
+        title=title,
+        description=description,
+        image_url=choice(image_urls),
+        color=0xff0000 
     )
     return embed

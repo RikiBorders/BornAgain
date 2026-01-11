@@ -6,7 +6,8 @@ class ChannelRegistryHelper:
         # channels are null by default.
         self.channels: dict[str, Optional[int]] = {
             "welcome": None,
-            "command": None
+            "command": None,
+            "announcement": None
         }
 
     def channel_is_registered(self, channel_type: str) -> bool:
@@ -21,5 +22,5 @@ class ChannelRegistryHelper:
     def get_channels(self):
         return self.channels
     
-    def get_channel(self, channel_type: str) -> Optional[int]:
-        self.channels.get(channel_type)
+    def get_channel_id(self, channel_type: str) -> Optional[int]:
+        return int(self.channels.get(channel_type))

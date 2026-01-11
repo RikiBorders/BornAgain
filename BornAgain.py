@@ -49,6 +49,19 @@ async def help(interaction: discord.Interaction):
         embed=build_help_embed().to_discord_embed()
     )
 
+@client.tree.command(
+        name="announce", 
+        description="Makes an announcement in the announcement channel.",
+        guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
+)
+@app_commands.checks.has_permissions(administrator=True)
+@app_commands.describe(description="announcement_description")
+@app_commands.describe(title="announcement_title")
+@app_commands.rename(description='description')
+@app_commands.rename(title='title')
+async def announce(interaction: discord.Interaction, title: str, description: str):
+    await botInstance.send_announcement_message(interaction, title, description)
+
 # Test commands available only in the beta environment
 
 # This command needs to be run to register the slash commands with Discord
