@@ -80,6 +80,9 @@ class Bot():
         channel_id = channels.get(channel_type)
         return int(channel_id) if channel_id is not None else None
     
+    def create_kick_petition(self):
+        pass
+    
     def get_server_data_from_supabase(self) -> dict:
         response = self.supabase_client.get_server_data(self.guild_id)
 
@@ -140,5 +143,11 @@ class Bot():
             embed=build_announcement_embed(title, description, image_urls).to_discord_embed()
         )
 
-    
+    async def send_vote_kick_notification(self, interaction: discord.Interaction, user: discord.Member):
+        moderator_channel_id = self.channel_registry_helper.get_channel_id("moderator")
+        channel = await self.client.fetch_channel(moderator_channel_id)
+
+        await channel.send(
+            f"A vote to kick {user.mention} has passed the threshold. Please review and confirm the kick."
+        )
     

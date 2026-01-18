@@ -10,6 +10,7 @@ from Bot import Bot
 from util.embed_utils import *
 from util.discord_task_utils import *
 from constant.Constants import DEFAULT_ROLE_NAME
+from featureFlags.feature_flags import VOTE_KICK_ENABLED
 
 '''
 The everlasting legacy of Wiz, Sayori, Tanaka, and Goose.
@@ -51,7 +52,7 @@ async def help(interaction: discord.Interaction):
 
 @client.tree.command(
         name="announce", 
-        description="Makes an announcement in the announcement channel.",
+        description="Sends an announcement to the announcement channel.",
         guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
 )
 @app_commands.checks.has_permissions(administrator=True)
@@ -61,6 +62,22 @@ async def help(interaction: discord.Interaction):
 @app_commands.rename(title='title')
 async def announce(interaction: discord.Interaction, title: str, description: str):
     await botInstance.send_announcement_message(interaction, title, description)
+
+@client.tree.command(
+        name="votekick", 
+        description="Starts a vote to kick a user from the server.",
+        guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
+)
+@app_commands.describe(user="The user to kick")
+async def votekick(interaction: discord.Interaction, user: discord.Member):
+    '''
+    Send a notification, and create a petition to vote kick a member from the server.
+    '''
+    if VOTE_KICK_ENABLED:
+        await interaction.response.send_message(
+            f"A vote to kick {user.mention} has been started. Voting instructions have been sent to the announcement channel.",
+            ephemeral=True
+        )
 
 # Test commands available only in the beta environment
 
