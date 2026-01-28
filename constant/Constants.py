@@ -11,3 +11,11 @@ USER_ID_TO_INTRO_FILE_MAP = {
 }
 DEFAULT_ROLE_NAME = "Goon" # This must be the exact name of the desired role, as it appears in discord.
 BOT_NAME = "Evil Knight"
+
+
+# TODO: Move the rules array to supabase and fetch on initialization
+RULES = [
+    "Slurs are prohibited. Reclaimed slurs may only be used by members of the group the term refers to, in a non-harassing way. Mods have final say",
+    "Rape jokes are forbidden",
+    "Read the room and exercise common sense"
+]

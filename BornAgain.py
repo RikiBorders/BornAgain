@@ -51,6 +51,17 @@ async def help(interaction: discord.Interaction):
     )
 
 @client.tree.command(
+        name="displayrules",
+        description="Sends a message containing the server rules",
+        guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
+)
+@app_commands.checks.has_permissions(administrator=True)
+@app_commands.describe(channel_id="channel_id")
+@app_commands.rename(channel_id='channel_id')
+async def displayrules(interaction: discord.Interaction, channel_id: str):
+    await botInstance.send_rules_message(interaction, channel_id)
+
+@client.tree.command(
         name="announce", 
         description="Sends an announcement to the announcement channel.",
         guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations

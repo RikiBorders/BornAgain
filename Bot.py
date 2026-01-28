@@ -2,12 +2,13 @@ import discord
 from discord.ext import commands
 import json
 
+from client.supabase_client import SupabaseClient
+from constant.Constants import RULES
 from exception.recdord_not_found_exception import RecordNotFoundError
 from helper.channel_registry_helper import ChannelRegistryHelper
-from client.supabase_client import SupabaseClient
 from typing import Optional
+from util.embed_utils import build_welcome_embed, build_announcement_embed, build_rules_embed
 
-from util.embed_utils import build_welcome_embed, build_announcement_embed
 
 class Bot():
     def __init__(self):
@@ -18,6 +19,7 @@ class Bot():
             'active': False, 
             'current_time': 0
         }
+        self.rules = RULES
         self.supabase_client = SupabaseClient()
         #TODO: server data should be fetched in a constructor, and values assigned and cached as needed as attributes
         self.server_data = self.get_server_data_from_supabase()
@@ -141,6 +143,20 @@ class Bot():
         await channel.send("@everyone")
         await channel.send(
             embed=build_announcement_embed(title, description, image_urls).to_discord_embed()
+        )
+
+    async def send_rules_message(self, interaction: discord.Interaction, channel_id: str):
+        try:
+            channel = await self.client.fetch_channel(channel_id)
+        except discord.InvalidData as e:
+            await interaction.response.send_message(
+                ephemeral=True,
+                content=f"Error: Could not find channel with ID {channel_id}."
+            )
+            return
+
+        await channel.send(
+            embed=build_rules_embed(self.rules).to_discord_embed()
         )
 
     async def send_vote_kick_notification(self, interaction: discord.Interaction, user: discord.Member):

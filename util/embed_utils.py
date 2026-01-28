@@ -33,3 +33,14 @@ def build_announcement_embed(title: str, description: str, image_urls: list[str]
         color=0xff0000 
     )
     return embed
+
+def build_rules_embed(rules: list[str]):
+
+    rules_description = "\n".join([f"{idx+1}. {rule}" for idx, rule in enumerate(rules)])
+
+    embed = Embed(
+        title="Server Rules",
+        description=rules_description,
+        color=0xff0000 
+    )
+    return embed
