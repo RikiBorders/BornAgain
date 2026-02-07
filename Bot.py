@@ -3,7 +3,6 @@ from discord.ext import commands
 import json
 
 from client.supabase_client import SupabaseClient
-from constant.Constants import RULES
 from exception.recdord_not_found_exception import RecordNotFoundError
 from helper.channel_registry_helper import ChannelRegistryHelper
 from typing import Optional
@@ -19,11 +18,11 @@ class Bot():
             'active': False, 
             'current_time': 0
         }
-        self.rules = RULES
         self.supabase_client = SupabaseClient()
         #TODO: server data should be fetched in a constructor, and values assigned and cached as needed as attributes
         self.server_data = self.get_server_data_from_supabase()
         print(self.server_data)
+        self.rules = self.get_rules()
 
         self.register_channels()
         print("Bot initialized", flush=True)
@@ -43,6 +42,11 @@ class Bot():
     
     def get_client(self):
         return self.client
+
+    def get_rules(self) -> list[str]:
+        rules = self.server_data.get('rules', [])
+        if rules:
+            return rules['rules']
 
     def get_channel_by_channel_type(self, channel_type: str) -> discord.TextChannel | discord.VoiceChannel:
         '''
