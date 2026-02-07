@@ -1,6 +1,9 @@
 from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
+from logger_config.logger import get_logger
+
+logger = get_logger(__name__)
 
 class SupabaseClient:
     def __init__(self):
@@ -11,7 +14,7 @@ class SupabaseClient:
 
         # Initialize connection to Supabase here
         self.client = create_client(self.url, self.key)
-        print("Supabase client initialized", flush=True)
+        logger.info("Supabase client initialized successfully")
     
     def get_server_data(self, guild_id: int) -> dict:
         response = (

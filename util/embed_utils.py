@@ -1,6 +1,6 @@
 from model.embed import Embed
-from stringg.help_menu_strings import HELP_MENU_DESCRIPTION
-from stringg.embed_strings import WELCOME_EMBED_DESCRIPTIONS
+from text.help_menu_strings import HELP_MENU_DESCRIPTION
+from text.embed_strings import WELCOME_EMBED_DESCRIPTIONS
 from constant.Constants import BOT_NAME
 from random import choice
 

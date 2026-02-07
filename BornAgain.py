@@ -1,16 +1,16 @@
 from discord import app_commands
-from discord.ext import commands
-from discord.ext import commands
-from discord.ui import Button, View
 from dotenv import load_dotenv
-import asyncio
 import os
+import logging
 
 from Bot import Bot
 from util.embed_utils import *
 from util.discord_task_utils import *
-from constant.Constants import DEFAULT_ROLE_NAME
 from featureFlags.feature_flags import VOTE_KICK_ENABLED
+from logger_config.logger import configure_logging, get_logger
+
+configure_logging()
+logger = get_logger(__name__)
 
 '''
 The everlasting legacy of Wiz, Sayori, Tanaka, and Goose.
@@ -26,7 +26,7 @@ def bot_booter():
 
 @client.event
 async def on_ready():
-    print(f'Logged in as {client.user}')
+    logger.info(f'Logged in as {client.user}')
     createTasks(client, botInstance)
 
 
@@ -51,14 +51,13 @@ async def help(interaction: discord.Interaction):
     )
 
 @client.tree.command(
-        name="displayrules",
+        name="sharerules",
         description="Sends a message containing the server rules",
         guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
 )
 @app_commands.checks.has_permissions(administrator=True)
 @app_commands.describe(channel_id="channel_id")
-@app_commands.rename(channel_id='channel_id')
-async def displayrules(interaction: discord.Interaction, channel_id: str):
+async def sharerules(interaction: discord.Interaction, channel_id: str):
     await botInstance.send_rules_message(interaction, channel_id)
 
 @client.tree.command(
@@ -67,10 +66,7 @@ async def displayrules(interaction: discord.Interaction, channel_id: str):
         guild=discord.Object(id=367021007690792961) #TODO: save this to the bot state and use it to key into server specific configurations
 )
 @app_commands.checks.has_permissions(administrator=True)
-@app_commands.describe(description="announcement_description")
-@app_commands.describe(title="announcement_title")
-@app_commands.rename(description='description')
-@app_commands.rename(title='title')
+@app_commands.describe(description="announcement_description", title="announcement_title")
 async def announce(interaction: discord.Interaction, title: str, description: str):
     await botInstance.send_announcement_message(interaction, title, description)
 

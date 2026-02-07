@@ -1,12 +1,15 @@
 import discord
 from discord.ext import commands
 import json
+from logger_config.logger import get_logger
 
 from client.supabase_client import SupabaseClient
-from exception.recdord_not_found_exception import RecordNotFoundError
+from exception.record_not_found_exception import RecordNotFoundError
 from helper.channel_registry_helper import ChannelRegistryHelper
 from typing import Optional
 from util.embed_utils import build_welcome_embed, build_announcement_embed, build_rules_embed
+
+logger = get_logger(__name__)
 
 
 class Bot():
@@ -19,13 +22,12 @@ class Bot():
             'current_time': 0
         }
         self.supabase_client = SupabaseClient()
-        #TODO: server data should be fetched in a constructor, and values assigned and cached as needed as attributes
         self.server_data = self.get_server_data_from_supabase()
-        print(self.server_data)
-        self.rules = self.get_rules()
+        logger.debug(f"Server data loaded: {self.server_data}")
 
+        self.rules = self.get_rules()
         self.register_channels()
-        print("Bot initialized", flush=True)
+        logger.info("Bot initialized successfully")
 
     def register_channels(self):
         self.channel_registry_helper.register_channel("command", self.server_data['channels']['command_channel_id']) 
@@ -127,7 +129,7 @@ class Bot():
         role = discord.utils.get(member.guild.roles, name=role_name)
         if role:
             await member.add_roles(role)
-            print(f"Assigned default role {role.name} to new member {member.name}")
+            logger.info(f"Assigned default role {role.name} to new member {member.name}")
 
     async def send_on_member_join_messages(self, member):
         system_channel_id = member.guild.system_channel.id
@@ -144,10 +146,20 @@ class Bot():
         announcement_channel_id = self.channel_registry_helper.get_channel_id("announcement")
         channel = await self.client.fetch_channel(announcement_channel_id)
 
-        await channel.send("@everyone")
-        await channel.send(
-            embed=build_announcement_embed(title, description, image_urls).to_discord_embed()
-        )
+        try:
+            await channel.send("@everyone")
+            await channel.send(
+                embed=build_announcement_embed(title, description, image_urls).to_discord_embed()
+            )
+            await interaction.response.send_message(
+                ephemeral=True,
+                content="Announcement sent successfully."
+            )
+        except Exception as e:
+            await interaction.response.send_message(
+                ephemeral=True,
+                content=f"Error sending announcement"
+            )
 
     async def send_rules_message(self, interaction: discord.Interaction, channel_id: str):
         try:
