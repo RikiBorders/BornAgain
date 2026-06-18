@@ -204,10 +204,10 @@ class Bot():
         display_name = rift_watcher_response["display_name"]
         region = rift_watcher_response["region"]
         rank = rift_watcher_response["rank"]
-        ranked_tier = rift_watcher_response["ranked_tier"]
-        ranked_division = rift_watcher_response["ranked_division"]
-        flex_rank = rift_watcher_response["flex_rank"]
-        flex_ranked_division = rift_watcher_response["flex_ranked_division"]
+        ranked_tier = rift_watcher_response.get("ranked_tier", None)
+        ranked_division = rift_watcher_response.get("ranked_division", None)
+        flex_rank = rift_watcher_response.get("flex_rank", None)
+        flex_ranked_division = rift_watcher_response.get("flex_ranked_division", None)
 
         solo_rank = rank
         if ranked_tier or ranked_division:

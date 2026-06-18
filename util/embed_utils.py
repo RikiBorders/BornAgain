@@ -39,7 +39,7 @@ def build_welcome_embed(member_count: int, image_urls: list[str]):
         title="A New Member has Arrived!",
         description=choice(WELCOME_EMBED_DESCRIPTIONS),
         image_url=choice(image_urls),
-        footer = f"You are the {member_count}th member!", # update this to use 2nd, th, st, etc
+        footer = f"You are the {member_count}{_get_ordinal_suffix(member_count)} member!",
         color=0xff0000,
     )
     return embed
@@ -86,3 +86,17 @@ def _get_rank_emoji(rank: str) -> str:
             break
 
     return emoji_markup
+
+
+def _get_ordinal_suffix(value: int) -> str:
+    if 11 <= (value % 100) <= 13:
+        return "th"
+
+    last_digit = value % 10
+    if last_digit == 1:
+        return "st"
+    if last_digit == 2:
+        return "nd"
+    if last_digit == 3:
+        return "rd"
+    return "th"
